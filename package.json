@@ -1,0 +1,27 @@
+{
+  "name": "guia-turismo-backend",
+  "version": "0.1.0",
+  "description": "Backend do projeto de guias de turismo de BC",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "check": "node --check src/server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "tourism",
+    "backend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0"
+  }
+}
