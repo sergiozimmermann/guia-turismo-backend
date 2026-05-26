@@ -7,7 +7,13 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "check": "node --check src/server.js"
+    "check": "node --check src/server.js",
+    "db:up": "docker compose -f docker-compose-dev.yml up -d",
+    "db:down": "docker compose -f docker-compose-dev.yml down",
+    "db:logs": "docker compose -f docker-compose-dev.yml logs -f postgres",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [
     "nodejs",
@@ -18,10 +24,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.8.2"
   }
 }

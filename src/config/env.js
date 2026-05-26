@@ -14,6 +14,7 @@ const env = {
   nodeEnv: getEnv('NODE_ENV', 'development'),
   port: Number(getEnv('PORT', '3333')),
   apiPrefix: getEnv('API_PREFIX', '/api/v1'),
+  databaseUrl: getEnv('DATABASE_URL'),
 };
 
 module.exports = env;
