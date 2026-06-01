@@ -6,3 +6,43 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Visitor {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("visitor")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TourGroup {
+  id                 String   @id @default(uuid())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  contractorName     String
+  contractorDocument String
+  passport           String?
+  address            String
+  nationality        String?
+  contactPerson      String
+  transportType      String
+  transportModel     String
+  transportColor     String
+  licensePlate       String
+  driverName         String
+  driverContact      String
+  language           String
+  destination        String
+  serviceDate        DateTime
+  meetingPoint       String
+  departureTime      String
+  returnEstimate     String
+  accommodation      String
+  dayTrip            Boolean
+  arrivalDate        DateTime
+  returnDate         DateTime
+  passengerCount     Int
+  profile            String
+}

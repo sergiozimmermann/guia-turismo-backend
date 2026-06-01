@@ -1,0 +1,32 @@
+-- CreateTable
+CREATE TABLE "TourGroup" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "contractorName" TEXT NOT NULL,
+    "contractorDocument" TEXT NOT NULL,
+    "passport" TEXT,
+    "address" TEXT NOT NULL,
+    "nationality" TEXT,
+    "contactPerson" TEXT NOT NULL,
+    "transportType" TEXT NOT NULL,
+    "transportModel" TEXT NOT NULL,
+    "transportColor" TEXT NOT NULL,
+    "licensePlate" TEXT NOT NULL,
+    "driverName" TEXT NOT NULL,
+    "driverContact" TEXT NOT NULL,
+    "language" TEXT NOT NULL,
+    "destination" TEXT NOT NULL,
+    "serviceDate" TIMESTAMP(3) NOT NULL,
+    "meetingPoint" TEXT NOT NULL,
+    "departureTime" TEXT NOT NULL,
+    "returnEstimate" TEXT NOT NULL,
+    "accommodation" TEXT NOT NULL,
+    "dayTrip" BOOLEAN NOT NULL,
+    "arrivalDate" TIMESTAMP(3) NOT NULL,
+    "returnDate" TIMESTAMP(3) NOT NULL,
+    "passengerCount" INTEGER NOT NULL,
+    "profile" TEXT NOT NULL,
+
+    CONSTRAINT "TourGroup_pkey" PRIMARY KEY ("id")
+);

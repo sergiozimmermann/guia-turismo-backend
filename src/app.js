@@ -2,11 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
 
 const env = require('./config/env');
 const { apiRouter } = require('./shared/http/api-router');
 const { notFoundHandler } = require('./shared/http/not-found-handler');
 const { errorHandler } = require('./shared/http/error-handler');
+const { specs } = require('./shared/docs/swagger');
 
 function createApp() {
   const app = express();
@@ -23,6 +25,11 @@ function createApp() {
       timestamp: new Date().toISOString(),
     });
   });
+
+  app.use('/docs', swaggerUi.serve);
+  app.get('/docs', swaggerUi.setup(specs, { explorer: true }));
+
+  console.log(`Swagger docs available at http://localhost:${env.port}/docs`);
 
   app.use(env.apiPrefix, apiRouter);
 
