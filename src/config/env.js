@@ -17,6 +17,10 @@ const env = {
   databaseUrl: getEnv('DATABASE_URL'),
   jwtSecret: getEnv('JWT_SECRET', 'please-change-this'),
   jwtExpiresIn: getEnv('JWT_EXPIRES_IN', '7d'),
+  tourGuideTokenExpiresInHours: Number(getEnv('TOUR_GUIDE_TOKEN_EXPIRES_IN_HOURS', '24')),
+  adminEmail: getEnv('ADMIN_EMAIL', 'admin@guia-turismo.com'),
+  adminPassword: getEnv('ADMIN_PASSWORD', 'Admin1234!'),
+  adminName: getEnv('ADMIN_NAME', 'Administrador'),
 };
 
 module.exports = env;

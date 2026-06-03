@@ -1,6 +1,7 @@
 const { Router } = require('express');
+const { authenticateToken, authorizeRoles } = require('../../../shared/http/auth-middleware');
 
-const { registerTourGroupController } = require('./tour-groups.controller');
+const { registerTourGroupController, listTourGroupsController } = require('./tour-groups.controller');
 
 const tourGroupsRouter = Router();
 
@@ -44,6 +45,43 @@ tourGroupsRouter.post('/register', registerTourGroupController);
  * @swagger
  * /tour-groups:
  *   get:
+ *     summary: Listar grupos de turistas
+ *     description: Retorna os grupos de turistas cadastrados.
+ *     tags:
+ *       - Tour Groups (Grupos de Turistas)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de grupos retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tourGroups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/TourGroup'
+ *       401:
+ *         description: Token inválido ou ausente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso negado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+tourGroupsRouter.get('/', authenticateToken, authorizeRoles(['admin']), listTourGroupsController);
+
+/**
+ * @swagger
+ * /tour-groups/status:
+ *   get:
  *     summary: Status do módulo
  *     description: Verifica se o módulo de grupos de turistas está disponível
  *     tags:
@@ -52,7 +90,7 @@ tourGroupsRouter.post('/register', registerTourGroupController);
  *       200:
  *         description: Módulo está operacional
  */
-tourGroupsRouter.get('/', (_req, res) => {
+tourGroupsRouter.get('/status', (_req, res) => {
   return res.status(200).json({
     module: 'tour-groups',
     message: 'Tour groups module is ready',

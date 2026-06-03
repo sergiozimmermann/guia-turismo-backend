@@ -14,7 +14,7 @@ const options = {
     },
     servers: [
       {
-        url: process.env.API_URL || 'http://localhost:3333/api/v1',
+        url: process.env.API_URL || `http://localhost:${process.env.PORT || 3333}/api/v1`,
         description: 'API Server',
       },
     ],
@@ -38,7 +38,7 @@ const options = {
             },
           },
         },
-        Visitor: {
+        User: {
           type: 'object',
           properties: {
             id: {
@@ -54,7 +54,7 @@ const options = {
             },
             role: {
               type: 'string',
-              enum: ['visitor'],
+              enum: ['visitor', 'guide', 'admin'],
             },
             createdAt: {
               type: 'string',
@@ -66,7 +66,7 @@ const options = {
             },
           },
         },
-        VisitorRegister: {
+        UserRegister: {
           type: 'object',
           required: ['email', 'password', 'name'],
           properties: {
@@ -83,7 +83,7 @@ const options = {
             },
           },
         },
-        VisitorLogin: {
+        UserLogin: {
           type: 'object',
           required: ['email', 'password'],
           properties: {
@@ -102,8 +102,8 @@ const options = {
             token: {
               type: 'string',
             },
-            visitor: {
-              $ref: '#/components/schemas/Visitor',
+            user: {
+              $ref: '#/components/schemas/User',
             },
           },
         },
@@ -190,6 +190,14 @@ const options = {
             },
             profile: {
               type: 'string',
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'guide_linked'],
+            },
+            guideId: {
+              type: 'string',
+              nullable: true,
             },
             createdAt: {
               type: 'string',
@@ -305,13 +313,171 @@ const options = {
             },
           },
         },
+        TourGuide: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            cnpj: {
+              type: 'string',
+            },
+            legalRepresentativeCpf: {
+              type: 'string',
+            },
+            name: {
+              type: 'string',
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              nullable: true,
+            },
+            phone: {
+              type: 'string',
+              nullable: true,
+            },
+            licenseNumber: {
+              type: 'string',
+              nullable: true,
+            },
+            languages: {
+              type: 'string',
+              nullable: true,
+            },
+            address: {
+              type: 'string',
+              nullable: true,
+            },
+            active: {
+              type: 'boolean',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
+        TourGuideRegister: {
+          type: 'object',
+          required: ['cnpj', 'legalRepresentativeCpf', 'name'],
+          properties: {
+            cnpj: {
+              type: 'string',
+            },
+            legalRepresentativeCpf: {
+              type: 'string',
+            },
+            name: {
+              type: 'string',
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+            },
+            phone: {
+              type: 'string',
+            },
+            licenseNumber: {
+              type: 'string',
+            },
+            languages: {
+              type: 'string',
+            },
+            address: {
+              type: 'string',
+            },
+            active: {
+              type: 'boolean',
+            },
+          },
+        },
+        TourGuideClaimAccess: {
+          type: 'object',
+          required: ['token', 'password'],
+          properties: {
+            token: {
+              type: 'string',
+              description: 'Token gerado pelo administrador para ativação do acesso do guia',
+            },
+            password: {
+              type: 'string',
+              minLength: 6,
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email do guia, requerido se não estiver cadastrado no registro do guia',
+            },
+          },
+        },
+        TourGuideScheduleItem: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            dayOfWeek: {
+              type: 'string',
+              enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+            },
+            startTime: {
+              type: 'string',
+              description: 'Horário de início no formato HH:mm',
+            },
+            endTime: {
+              type: 'string',
+              description: 'Horário de término no formato HH:mm',
+            },
+            active: {
+              type: 'boolean',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
+        TourGuideScheduleUpdate: {
+          type: 'object',
+          required: ['schedule'],
+          properties: {
+            schedule: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/TourGuideScheduleItem',
+              },
+            },
+          },
+        },
+        TourGroupAssignGuide: {
+          type: 'object',
+          required: ['guideId'],
+          properties: {
+            guideId: {
+              type: 'string',
+            },
+          },
+        },
       },
     },
   },
   apis: [
     './src/shared/http/api-router.js',
-    './src/modules/visitors/http/visitors.routes.js',
+    './src/modules/users/http/users.routes.js',
     './src/modules/tour-groups/http/tour-groups.routes.js',
+    './src/modules/tour-guides/http/tour-guides.routes.js',
+    './src/modules/admin/http/admin.routes.js',
   ],
 };
 

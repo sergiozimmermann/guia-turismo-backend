@@ -4,79 +4,85 @@ const { prisma } = require('../../../config/prisma');
 const { AppError } = require('../../../shared/errors/app-error');
 const env = require('../../../config/env');
 
-class VisitorsService {
-  async register(email, password, name) {
-    const existingVisitor = await prisma.visitor.findUnique({
+class UsersService {
+  async register(email, password, name, role = 'visitor') {
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingVisitor) {
+    if (existingUser) {
       throw new AppError('Email já cadastrado', 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const visitor = await prisma.visitor.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        role: 'visitor',
+        role,
       },
     });
 
     const token = jwt.sign(
-      { id: visitor.id, email: visitor.email, role: visitor.role },
+      { id: user.id, email: user.email, role: user.role },
       env.jwtSecret,
       { expiresIn: env.jwtExpiresIn }
     );
 
     return {
       token,
-      visitor: {
-        id: visitor.id,
-        email: visitor.email,
-        name: visitor.name,
-        role: visitor.role,
-        createdAt: visitor.createdAt,
-        updatedAt: visitor.updatedAt,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     };
   }
 
   async login(email, password) {
-    const visitor = await prisma.visitor.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!visitor) {
+    if (!user) {
       throw new AppError('Email ou senha incorretos', 400);
     }
 
-    const isPasswordValid = await bcrypt.compare(password, visitor.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new AppError('Email ou senha incorretos', 400);
     }
 
     const token = jwt.sign(
-      { id: visitor.id, email: visitor.email, role: visitor.role },
+      { id: user.id, email: user.email, role: user.role },
       env.jwtSecret,
       { expiresIn: env.jwtExpiresIn }
     );
 
     return {
       token,
-      visitor: {
-        id: visitor.id,
-        email: visitor.email,
-        name: visitor.name,
-        role: visitor.role,
-        createdAt: visitor.createdAt,
-        updatedAt: visitor.updatedAt,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     };
   }
+
+  async getUserById(userId) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+    });
+  }
 }
 
-module.exports = { VisitorsService: new VisitorsService() };
+module.exports = { UsersService: new UsersService() };

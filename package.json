@@ -13,6 +13,7 @@
     "db:logs": "docker compose -f docker-compose-dev.yml logs -f postgres",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
+    "seed": "node src/prisma/seed.js",
     "prisma:studio": "prisma studio"
   },
   "keywords": [

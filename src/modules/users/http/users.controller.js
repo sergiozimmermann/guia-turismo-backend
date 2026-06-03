@@ -1,4 +1,4 @@
-const { VisitorsService } = require('../application/visitors.service');
+const { UsersService } = require('../application/users.service');
 const { AppError } = require('../../../shared/errors/app-error');
 
 function validateRegisterPayload(payload) {
@@ -42,24 +42,45 @@ function validateLoginPayload(payload) {
   return { email: email.toLowerCase(), password };
 }
 
-async function registerVisitorController(req, res, next) {
+async function getCurrentUserController(req, res, next) {
+  try {
+    const user = await UsersService.getUserById(req.user.id);
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado.', 404);
+    }
+
+    return res.status(200).json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function registerUserController(req, res, next) {
   try {
     const { email, password, name } = validateRegisterPayload(req.body);
-    const result = await VisitorsService.register(email, password, name);
+    const result = await UsersService.register(email, password, name);
     return res.status(201).json(result);
   } catch (error) {
     next(error);
   }
 }
 
-async function loginVisitorController(req, res, next) {
+async function loginUserController(req, res, next) {
   try {
     const { email, password } = validateLoginPayload(req.body);
-    const result = await VisitorsService.login(email, password);
+    const result = await UsersService.login(email, password);
     return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
 }
 
-module.exports = { registerVisitorController, loginVisitorController };
+module.exports = { registerUserController, loginUserController, getCurrentUserController };

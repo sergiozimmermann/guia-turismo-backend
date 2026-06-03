@@ -1,6 +1,6 @@
 const { Router } = require('express');
 
-const { visitorsRouter } = require('../../modules/visitors/http/visitors.routes');
+const { usersRouter } = require('../../modules/users/http/users.routes');
 const { tourGroupsRouter } = require('../../modules/tour-groups/http/tour-groups.routes');
 const { tourGuidesRouter } = require('../../modules/tour-guides/http/tour-guides.routes');
 const { adminRouter } = require('../../modules/admin/http/admin.routes');
@@ -9,8 +9,8 @@ const { rotationEngineRouter } = require('../../modules/rotation-engine/http/rot
 /**
  * @swagger
  * tags:
- *   - name: Visitors (Turistas)
- *     description: Endpoints para cadastro e autenticação de turistas
+ *   - name: Users (Usuários)
+ *     description: Endpoints para cadastro e autenticação de usuários
  *   - name: Tour Groups (Grupos de Turistas)
  *     description: Endpoints para gerenciamento de grupos de turistas
  *   - name: Tour Guides (Guias de Turismo)
@@ -22,7 +22,7 @@ const { rotationEngineRouter } = require('../../modules/rotation-engine/http/rot
  */
 const apiRouter = Router();
 
-apiRouter.use('/visitors', visitorsRouter);
+apiRouter.use('/users', usersRouter);
 apiRouter.use('/tour-groups', tourGroupsRouter);
 apiRouter.use('/tour-guides', tourGuidesRouter);
 apiRouter.use('/admin', adminRouter);

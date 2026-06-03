@@ -113,4 +113,13 @@ async function registerTourGroupController(req, res, next) {
   }
 }
 
-module.exports = { registerTourGroupController };
+async function listTourGroupsController(_req, res, next) {
+  try {
+    const tourGroups = await TourGroupsService.listTourGroups();
+    return res.status(200).json({ tourGroups });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { registerTourGroupController, listTourGroupsController };
