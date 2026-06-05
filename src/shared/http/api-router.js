@@ -7,21 +7,10 @@ const { adminRouter } = require('../../modules/admin/http/admin.routes');
 const { commissionsRouter } = require('../../modules/commissions/http/commissions.routes');
 const { disciplineRouter } = require('../../modules/discipline/http/discipline.routes');
 const { rotationEngineRouter } = require('../../modules/rotation-engine/http/rotation-engine.routes');
+const { contactsRouter } = require('../../modules/contacts/http/contacts.routes');
+const { emergencyContactsRouter } = require('../../modules/emergency-contacts/http/emergency-contacts.routes');
+const { feedbackRouter } = require('../../modules/feedback/http/feedback.routes');
 
-/**
- * @swagger
- * tags:
- *   - name: Users (Usuários)
- *     description: Endpoints para cadastro e autenticação de usuários
- *   - name: Tour Groups (Grupos de Turistas)
- *     description: Endpoints para gerenciamento de grupos de turistas
- *   - name: Tour Guides (Guias de Turismo)
- *     description: Endpoints para guias de turismo
- *   - name: Admin (Administrador)
- *     description: Endpoints para administradores
- *   - name: Rotation Engine
- *     description: Endpoints para o motor de alocação de guias
- */
 const apiRouter = Router();
 
 apiRouter.use('/users', usersRouter);
@@ -31,5 +20,8 @@ apiRouter.use('/admin', adminRouter);
 apiRouter.use('/commissions', commissionsRouter);
 apiRouter.use('/discipline', disciplineRouter);
 apiRouter.use('/rotation-engine', rotationEngineRouter);
+apiRouter.use('/contacts', contactsRouter);
+apiRouter.use('/emergency-contacts', emergencyContactsRouter);
+apiRouter.use('/feedback', feedbackRouter);
 
 module.exports = { apiRouter };

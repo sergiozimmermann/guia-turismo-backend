@@ -224,4 +224,5 @@ module.exports = {
   listTourGuidesController,
   getTourGuideScheduleController,
   updateTourGuideScheduleController,
+  updateTourGuideController
 };

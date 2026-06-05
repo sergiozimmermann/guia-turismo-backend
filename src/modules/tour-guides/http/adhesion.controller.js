@@ -26,13 +26,27 @@ async function getAdhesionsController(req, res, next) {
 async function updateAdhesionPaymentController(req, res, next) {
   try {
     const { adhesionId } = req.params;
-    const { paymentDate, paymentStatus } = req.body;
+    const { paymentDate, paymentStatus, amount } = req.body;
     if (!paymentStatus) throw new AppError('paymentStatus é obrigatório', 400);
-    const adhesion = await AdhesionService.updateAdhesionPayment(adhesionId, { paymentDate, paymentStatus });
+    const adhesion = await AdhesionService.updateAdhesionPayment(adhesionId, { paymentDate, paymentStatus, amount });
     return res.status(200).json({ adhesion });
   } catch (error) {
     next(error);
   }
 }
 
-module.exports = { createAdhesionController, getAdhesionsController, updateAdhesionPaymentController };
+async function listAllAdhesionsController(req, res, next) {
+  try {
+    const adhesions = await AdhesionService.listAllAdhesions();
+    return res.status(200).json({ adhesions });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  createAdhesionController,
+  getAdhesionsController,
+  updateAdhesionPaymentController,
+  listAllAdhesionsController,
+};

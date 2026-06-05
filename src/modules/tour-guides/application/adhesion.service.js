@@ -3,7 +3,12 @@ const { prisma } = require('../../../config/prisma');
 class AdhesionService {
   async createAdhesion({ guideId, adhesionDate, validityDate, amount }) {
     return prisma.tourGuideAdhesion.create({
-      data: { guideId, adhesionDate: new Date(adhesionDate), validityDate: new Date(validityDate), amount: Number(amount) },
+      data: {
+        guideId,
+        adhesionDate: new Date(adhesionDate),
+        validityDate: new Date(validityDate),
+        amount: Number(amount),
+      },
     });
   }
 
@@ -11,8 +16,22 @@ class AdhesionService {
     return prisma.tourGuideAdhesion.findMany({ where: { guideId }, orderBy: { createdAt: 'desc' } });
   }
 
-  async updateAdhesionPayment(id, { paymentDate, paymentStatus }) {
-    return prisma.tourGuideAdhesion.update({ where: { id }, data: { paymentDate: paymentDate ? new Date(paymentDate) : undefined, paymentStatus } });
+  async listAllAdhesions() {
+    return prisma.tourGuideAdhesion.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { tourGuide: { select: { name: true } } },
+    });
+  }
+
+  async updateAdhesionPayment(id, { paymentDate, paymentStatus, amount }) {
+    return prisma.tourGuideAdhesion.update({
+      where: { id },
+      data: {
+        paymentDate: paymentDate ? new Date(paymentDate) : undefined,
+        paymentStatus,
+        ...(amount != null ? { amount: Number(amount) } : {}),
+      },
+    });
   }
 }
 

@@ -1,33 +1,71 @@
-const { RotationQueue } = require('../domain/rotation-queue');
+const { prisma } = require('../../../config/prisma');
+const { AppError } = require('../../../shared/errors/app-error');
 
 class RotationEngineService {
-  constructor() {
-    this.queue = new RotationQueue([
-      { id: 'guide-1', name: 'Guia 01' },
-      { id: 'guide-2', name: 'Guia 02' },
-      { id: 'guide-3', name: 'Guia 03' },
-    ]);
+  async listQueue() {
+    return prisma.rotationQueueEntry.findMany({ orderBy: { position: 'asc' } });
   }
 
-  matchGuideToGroup(group) {
-    const selectedGuide = this.queue.nextGuide();
+  async addGuide(guideId, guideName) {
+    const existing = await prisma.rotationQueueEntry.findUnique({ where: { guideId } });
+    if (existing) {
+      throw new AppError('Guia já está na fila de rodízio.', 409);
+    }
+    const count = await prisma.rotationQueueEntry.count();
+    return prisma.rotationQueueEntry.create({
+      data: { guideId, guideName, position: count + 1 },
+    });
+  }
+
+  async removeGuide(guideId) {
+    const entry = await prisma.rotationQueueEntry.findUnique({ where: { guideId } });
+    if (!entry) throw new AppError('Guia não encontrado na fila.', 404);
+
+    await prisma.rotationQueueEntry.delete({ where: { guideId } });
+
+    // Reordena posições
+    const remaining = await prisma.rotationQueueEntry.findMany({ orderBy: { position: 'asc' } });
+    for (let i = 0; i < remaining.length; i++) {
+      await prisma.rotationQueueEntry.update({
+        where: { id: remaining[i].id },
+        data: { position: i + 1 },
+      });
+    }
+  }
+
+  async matchGuideToGroup(group) {
+    const queue = await this.listQueue();
+    if (queue.length === 0) {
+      throw new AppError('Nenhum guia disponível na fila de rodízio.', 409);
+    }
+
+    const selected = queue[0];
+
+    // Move o guia selecionado para o final (round-robin)
+    const newPosition = queue.length;
+    await prisma.rotationQueueEntry.update({
+      where: { id: selected.id },
+      data: { position: newPosition + 1 },
+    });
+    // Reorganiza os demais
+    for (let i = 1; i < queue.length; i++) {
+      await prisma.rotationQueueEntry.update({
+        where: { id: queue[i].id },
+        data: { position: i },
+      });
+    }
+    await prisma.rotationQueueEntry.update({
+      where: { id: selected.id },
+      data: { position: queue.length },
+    });
 
     return {
       group,
-      guide: selectedGuide,
+      guide: { id: selected.guideId, name: selected.guideName },
       matchedAt: new Date().toISOString(),
       policy: 'round-robin',
     };
   }
-
-  listQueue() {
-    return this.queue.listGuides();
-  }
-
-  addGuide(guide) {
-    this.queue.registerGuide(guide);
-    return guide;
-  }
 }
 
-module.exports = { RotationEngineService };
+module.exports = { RotationEngineService: new RotationEngineService() };
