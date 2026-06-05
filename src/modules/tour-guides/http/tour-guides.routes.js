@@ -5,6 +5,7 @@ const {
   getTourGuideScheduleController,
   updateTourGuideScheduleController,
 } = require('./tour-guides.controller');
+const { createAdhesionController, getAdhesionsController, updateAdhesionPaymentController } = require('./adhesion.controller');
 const { authenticateToken, authorizeRoles } = require('../../../shared/http/auth-middleware');
 
 const tourGuidesRouter = Router();
@@ -43,6 +44,27 @@ const tourGuidesRouter = Router();
  *               $ref: '#/components/schemas/Error'
  */
 tourGuidesRouter.post('/claim-access', claimAccessController);
+// admin endpoints to manage guides
+tourGuidesRouter.put('/:guideId', authenticateToken, authorizeRoles(['admin']), async (req, res, next) => {
+  try {
+    const { guideId } = req.params;
+    const data = req.body;
+    const updated = await require('../application/tour-guides.service').TourGuidesService ? null : null; // placeholder
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+tourGuidesRouter.delete('/:guideId', authenticateToken, authorizeRoles(['admin']), async (req, res, next) => {
+  try {
+    const { guideId } = req.params;
+    const { prisma } = require('../../../config/prisma');
+    await prisma.tourGuide.delete({ where: { id: guideId } });
+    return res.status(200).json({ message: 'Tour guide deleted successfully', id: guideId });
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * @swagger
@@ -172,6 +194,13 @@ tourGuidesRouter.get('/:guideId/schedule', authenticateToken, authorizeRoles(['a
  *               $ref: '#/components/schemas/Error'
  */
 tourGuidesRouter.put('/:guideId/schedule', authenticateToken, authorizeRoles(['admin', 'guide']), updateTourGuideScheduleController);
+// admin: update guide
+tourGuidesRouter.put('/:guideId', authenticateToken, authorizeRoles(['admin']), require('./tour-guides.controller').updateTourGuideController);
+
+// Adhesion endpoints
+tourGuidesRouter.post('/:guideId/adhesion', authenticateToken, authorizeRoles(['admin']), createAdhesionController);
+tourGuidesRouter.get('/:guideId/adhesion', authenticateToken, authorizeRoles(['admin', 'guide']), getAdhesionsController);
+tourGuidesRouter.put('/adhesion/:adhesionId/payment', authenticateToken, authorizeRoles(['admin']), updateAdhesionPaymentController);
 
 tourGuidesRouter.get('/status', (_req, res) => {
   return res.status(200).json({

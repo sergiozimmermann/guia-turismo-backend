@@ -17,9 +17,15 @@ class TourGroupsService {
   }
 
   async listTourGroups() {
-    return prisma.tourGroup.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    const groups = await prisma.tourGroup.findMany({ orderBy: { createdAt: 'desc' } });
+    // attach basic guide info when available
+    return Promise.all(groups.map(async (g) => {
+      if (g.guideId) {
+        const guide = await prisma.tourGuide.findUnique({ where: { id: g.guideId } });
+        return { ...g, guide: guide ? { id: guide.id, name: guide.name } : null };
+      }
+      return { ...g, guide: null };
+    }));
   }
 
   async assignGuideToTourGroup(tourGroupId, guideId) {

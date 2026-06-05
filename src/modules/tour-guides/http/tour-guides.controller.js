@@ -113,6 +113,20 @@ async function createTourGuideController(req, res, next) {
   }
 }
 
+async function updateTourGuideController(req, res, next) {
+  try {
+    const { guideId } = req.params;
+    const data = req.body;
+    const { prisma } = require('../../../config/prisma');
+    const existing = await prisma.tourGuide.findUnique({ where: { id: guideId } });
+    if (!existing) throw new AppError('Guia não encontrado.', 404);
+    const updated = await prisma.tourGuide.update({ where: { id: guideId }, data });
+    return res.status(200).json({ tourGuide: updated });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function listTourGuidesController(_req, res, next) {
   try {
     const tourGuides = await TourGuidesService.listTourGuides();

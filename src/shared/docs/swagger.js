@@ -478,6 +478,8 @@ const options = {
     './src/modules/tour-groups/http/tour-groups.routes.js',
     './src/modules/tour-guides/http/tour-guides.routes.js',
     './src/modules/admin/http/admin.routes.js',
+      './src/modules/commissions/http/commissions.routes.js',
+      './src/modules/discipline/http/discipline.routes.js',
   ],
 };
 
